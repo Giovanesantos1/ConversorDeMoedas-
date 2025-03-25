@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -14,6 +16,23 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+
+        val localProperties = project.rootProject.file("local.properties")
+        val properties = Properties()
+        properties.load(localProperties.inputStream())
+
+        val apiKey = properties.getProperty("API_KEY")
+
+        buildConfigField("String", "BASE_URL", "\"http://data.fixer.io/api/\"")
+
+        defaultConfig {
+            buildConfigField("String", "API_KEY", "\"$apiKey\"")
+        }
+
+
+    buildFeatures {
+        buildConfig = true
+      }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -37,7 +56,10 @@ android {
 }
 
 dependencies {
-    implementation("androidx.cardview:cardview:1.0.0")
+
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
